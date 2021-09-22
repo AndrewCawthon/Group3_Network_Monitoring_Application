@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!-- JNM application configuration -->
+
+<jnm>
+
+	<!-- Register all monitor types -->
+
+	<register-monitor>
+		<name>HTTP Monitor</name>
+		<classname>com.anthonyeden.jnm.monitor.HttpMonitor</classname>
+		<editorclass>com.anthonyeden.jnm.monitor.HttpMonitorEditor</editorclass>
+	</register-monitor>
+	
+	<register-monitor>
+		<name>TCP Monitor</name>
+		<classname>com.anthonyeden.jnm.monitor.TCPMonitor</classname>
+		<editorclass>com.anthonyeden.jnm.monitor.TCPMonitorEditor</editorclass>
+	</register-monitor>
+	
+	<!-- Register all action types -->
+	
+	<register-action>
+		<name>HTTP Request Action</name>
+		<classname>com.anthonyeden.jnm.action.HttpRequestAction</classname>
+		<editorclass>com.anthonyeden.jnm.action.HttpRequestActionEditor</editorclass>
+	</register-action>
+
+</jnm>
