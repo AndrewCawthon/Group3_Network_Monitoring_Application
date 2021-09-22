@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>Java Network Monitor</title>
+</head>
+
+<body bgcolor="#ffffff">
+<blockquote>
+
+<h1 align="center">Java Network Monitor</h1>
+
+<p>The Java Network Monitor (JNM) is an open source Java application which allows you to define monitors which can poll network services at defined intervals and execute user-definable actions when the service status changes.</p>
+
+<h3 align="center">Instructions</h3>
+
+<p>After downloading and extracting JNM, start the program by either double-clicking the JNM.jar file or entering the following on the command line: <code>java -jar JNM.jar</code>.  The main screen should appear.  You must now configure your monitors.  Select <b>Monitor -> Add Monitor...</b> from the menu.</p>
+
+<p><img src="images/ss1.jpg" border="0" alt="Add A Monitor"></p>
+
+<p>The Monitor dialog will appear.  You can specify a name and a delay for all monitors.  Individual monitor implementations provide different editors for their required properties.  Selecting a different monitor type from the combo box will cause the UI in the General tab to change.  <b>Note:</b> Selecting a new monitor type will remove all changes you have made in the General tab!</p>
+
+<p><img src="images/ss2.jpg" border="0"></p>
+
+<p>Fill in the fields of the monitor dialog.  The example below shows how to configure an HTTP monitor.  You can specify the URL which will be requested, the timeout, the request method (GET/POST/HEAD), the regular expression to use to verify the response, as well as basic authentication information if necessary.</p>
+
+<p><img src="images/ss3.jpg" border="0"></p>
+
+<p>When you click OK it will add your monitor to the main screen's monitor table.  The monitor table displays each monitor's name, its current activity and its current state.  The color of the state cell will change depending on the state.</p>
+
+<p><img src="images/ss9.jpg" border="0"></p>
+
+<p>You can change a monitor's properties by right-clicking the monitor's row.  You can also start and stop individual monitors, remove a monitor, execute a monitor immediately, and see the last request and response using this pop-up menu.</p>
+
+<p><img src="images/ss4.jpg" border="0"></p>
+
+<p>You can configure actions to be triggered when a monitor enters a particular state.  First you must configure one or more actions by selecting <b>Monitor -> Actions...</b> from the menu.
+
+<p><img src="images/ss6.jpg" border="0"></p>
+
+<p>An action manager dialog will appear.  Using this dialog you can add, edit and remove actions from your action list.</p>
+
+<p><img src="images/ss7.jpg" border="0"></p>
+
+<p>Configuring an action is very similar to configuring a monitor.  Fill in the necessary information in the General panel and click OK to save your changes.</p>
+
+<p><img src="images/ss8.jpg" border="0"></p>
+
+<p>Once you have created one or more actions you can assign them to monitors.  When viewing the monitor's properties, select the Actions tab.  There is a combo box with a list of all possible states.  Selecting a state will show all actions which are triggered when the monitor is in that state.  <b>Note:</b> actions will currently be triggered at every execution of the monitor, regardless if state has changed!  You can add or remove actions from the state's action list with the add and remove button.
+
+<p><img src="images/ss5.jpg" border="0"></p>
+
+<p>You can save your current configuration at any time.  When you quit JNM you will be prompted to save your configuration if any changes have been made.  <b>Note:</b> it is advised that for the moment you save your configuration manually on a regular basis to not lose any changes!</p>
+
+<h3 align="center">Monitors</h3>
+
+<p>JNM currently includes two monitor implementations:</p>
+
+<dl>
+<dt><b>TCP Monitor</b>
+<dd>Send a single raw payload over TCP to a server.  Compares the resulting response against a user-defined regular expression.</dd>
+
+<dt><b>HTTP Monitor</b>
+<dd>Invoke a particular URL.  Includes support for Basic Authentication.  Compares the resulting response against a user-defined regular expression.</dd>
+</dl>
+
+<p>More monitors will be added in the future.</p>
+
+<p>You can also create your own monitor by extending the <code>com.anthonyeden.jnm.Monitor</code> abstract base class and implementing the <code>execute()</code> method.  The <code>execute()</code> method is called at the end of each wait interval.  Your implementation of the <code>execute()</code> method can call <code>setState()</code> at any time to update the current state of the server which is being polled.  Available states are found in the MonitorState class and include:</p>
+
+<ul>
+<li><code>MonitorState.OK</code></li>
+<li><code>MonitorState.DOWN</code></li>
+<li><code>MonitorState.ERROR</code></li>
+<li><code>MonitorState.FAILED</code></li>
+<li><code>MonitorState.TIMEOUT</code></li>
+<li><code>MonitorState.NOT_TESTED</code></li>
+</ul>
+
+<p>Monitor implementations must be accompanied by a class which implements the <code>com.anthonyeden.jnm.MonitorEditor</code> interface.  Implementations of this class are used to provide a user-interface for editing your monitor's properties.</p>
+
+<p>To use your monitor implementation, include it in JNM's application classpath and add an entry to the jnm.xml configuration file:</p>
+
+<pre>
+	&lt;register-monitor&gt;My Monitor&lt;/name&gt;
+		&lt;classname&gt;com.mycompany.MyMonitor&lt;/classname&gt;
+		&lt;editorclass&gt;com.com.mycompany.MyMonitorEditor&lt;/editorclass&gt;
+	&lt;/register-monitor&gt;
+</pre>
+
+<h3 align="center">Actions</h3>
+
+<p>When a monitor enters a particular state one or more actions can be triggered.  Currently JNM includes the following actions:</p>
+
+<dl>
+<dt><b>HTTP Request Action</b></dt>
+<dd>Execute a specific URL.  Includes support for basic authentication.</dd>
+</dl>
+
+<p>Additional actions can be created a similar fashion as monitors.  You must create a class which extends from <code>com.anthonyeden.jnm.Action</code>, implement the <code>execute(Monitor monitor)</code> method, implement the <code>com.anthonyeden.jnm.ActionEditor</code> interface, and provide an entry in the jnm.xml configuration file:</p>
+
+<pre>
+	&lt;register-action&gt;
+		&lt;name&gt;My Action&lt;/name&gt;
+		&lt;classname&gt;com.mycompany.MyAction&lt;/classname&gt;
+		&lt;editorclass&gt;com.mycompany.MyActionEditor&lt;/editorclass&gt;
+	&lt;/register-action&gt;
+</pre>
+
+<h3 align="center">Legal</h3>
+
+<p>THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, 
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ POSSIBILITY OF SUCH DAMAGE.</p>
+
+<h3 align="center">Acknowlegements</h3>
+
+<p>This product includes software developed by the Apache Software Foundation (<a href="http://www.apache.org/">http://www.apache.org/</a>).</p>
+
+</blockquote>
+
+</body>
+</html>
