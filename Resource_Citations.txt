@@ -1,0 +1,2 @@
+This file will be used as our resources citation file
+First resources is the JNM folder
