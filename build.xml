@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="JNM" default="build" basedir=".">
+
+	<property name="Name" value="JNM"/>
+	<property name="version" value="0.2"/>
+	<property name="copyright" value="Copyright (C) 2002 Anthony Eden.  All Rights Reserved."/>
+	<property name="manifest" value="MANIFEST.MF"/>
+	
+	<property name="build.dir" value="build"/>
+	<property name="src.dir" value="src"/>
+	<property name="docs.dir" value="docs"/>
+	<property name="lib.dir" value="lib"/>
+	
+	<property name="overview" value="${src.dir}/overview.html"/>
+	
+	<property name="build.classes" value="${build.dir}/classes"/>
+	<property name="build.src" value="${build.dir}/src"/>
+	<property name="build.docs" value="${build.dir}/docs"/>
+	<property name="build.lib" value="${build.dir}/lib"/>
+	<property name="build.javadocs" value="${build.docs}/api"/>
+	
+	<property name="packages" value="com.anthonyeden.jnm.*"/>
+	<property name="classpath" value="${lib.dir}/EdenLib.jar:${lib.dir}/dom4j-full.jar:${lib.dir}/jakarta-oro-2.0.5.jar"/>
+	
+	<!-- ==================================================== -->
+	<!-- Initialize Ant                                       -->
+	<!-- ==================================================== -->
+	
+	<target name="init">
+		<tstamp/>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Compile the source code.                                               -->
+	<!-- ====================================================================== -->
+
+	<target	name="compile" depends="init">
+		<copy todir="${build.src}" filtering="true">
+			<fileset dir="${src.dir}"/>
+		</copy>
+	
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.classes}"/>
+		<echo message="javac classpath = ${classpath}"/>
+		<javac srcdir="${build.src}" destdir="${build.classes}" classpath="${classpath}" debug="off" deprecation="off" optimize="on">
+			<include name="**/*.java"/>
+		</javac>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Create the JAR archive.                                                -->
+	<!-- ====================================================================== -->
+
+	<target	name="jar" depends="compile">
+		<mkdir dir="${build.lib}"/>
+		<jar jarfile="${build.dir}/${Name}.jar" basedir="${build.classes}" manifest="${manifest}">
+			<include name="**/*"/>
+		</jar>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Generate the API documentation.                                        -->
+	<!-- ====================================================================== -->
+	
+	<target	name="javadocs"	depends="init">
+		<mkdir dir="${build.javadocs}"/>
+		<javadoc packagenames="${packages}" sourcepath="${src.dir}" destdir="${build.javadocs}" overview="${overview}" classpath="${classpath}" author="true" version="true" windowtitle="${Name} API" doctitle="${Name}" bottom="${copyright}"/>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Build the application.                                                 -->
+	<!-- ====================================================================== -->
+	
+	<target name="build" depends="jar">
+		<copy todir="${build.lib}">
+			<fileset dir="${lib.dir}"/>
+		</copy>
+		
+		<copy todir="${build.docs}">
+			<fileset dir="${docs.dir}">
+				<exclude name="**/*.psd"/>
+			</fileset>
+		</copy>
+		
+		<copy file="log.properties" todir="${build.dir}"/>
+		<copy file="jnm.xml" todir="${build.dir}"/>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Create the distribution                                                -->
+	<!-- ====================================================================== -->
+
+	<target name="dist" depends="build, javadocs">
+		<copy file="build.xml" todir="${build.dir}"/>
+		<copy file="build.bat" todir="${build.dir}"/>
+		<copy file="README.txt" todir="${build.dir}"/>
+		<copy file="LICENSE.txt" todir="${build.dir}"/>
+		<copy file="CONTRIB.txt" todir="${build.dir}"/>
+		<copy file="CHANGELOG.txt" todir="${build.dir}"/>
+		
+		<delete dir="${build.classes}"/>
+		
+		<mkdir dir="zip/${Name}-${version}"/>
+		<copy todir="zip/${Name}-${version}">
+			<fileset dir="${build.dir}"/>
+		</copy>
+		<zip zipfile="${Name}-${version}.zip" basedir="zip"/>
+		<tar tarfile="${Name}-${version}.tar" basedir="zip"/>
+		<gzip zipfile="${Name}-${version}.tar.gz" src="${Name}-${version}.tar"/>
+		<delete file="${Name}-${version}.tar"/>
+		<delete dir="zip"/>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Clean up generated stuff                                               -->
+	<!-- ====================================================================== -->
+
+	<target	name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+</project>

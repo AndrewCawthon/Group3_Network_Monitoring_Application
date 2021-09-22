@@ -1,0 +1,14 @@
+Java Network Monitor change log:
+
+Version 0.2 (April 4, 2002)
+
+ - Added Action support where actions can be attached to monitors and
+   triggered when a monitor enters a particular state.
+ - All TCP and HTTP communications are now handled by the TCPClient
+   and HttpClient in the util package.
+ - TCPMonitor is now a standalone monitor which can connect to any TCP
+   host and port and send arbitrary data.
+
+Version 0.1 (March 11, 2002)
+
+ - Initial release
